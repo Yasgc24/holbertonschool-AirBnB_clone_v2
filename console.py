@@ -10,6 +10,10 @@ from models.state import State
 from models.city import City
 from models.amenity import Amenity
 from models.review import Review
+import shlex  # for splitting the line along spaces except in double quotes
+
+classes = {"Amenity": Amenity, "BaseModel": BaseModel, "City": City,
+           "Place": Place, "Review": Review, "State": State, "User": User}
 
 
 class HBNBCommand(cmd.Cmd):
@@ -19,21 +23,32 @@ class HBNBCommand(cmd.Cmd):
     prompt = '(hbnb) ' if sys.__stdin__.isatty() else ''
 
     classes = {
-        'BaseModel': BaseModel,
-        'User': User,
-        'Place': Place,
-        'State': State,
-        'City': City,
-        'Amenity': Amenity,
-        'Review': Review,
-    }
-
+               'BaseModel': BaseModel, 'User': User, 'Place': Place,
+               'State': State, 'City': City, 'Amenity': Amenity,
+               'Review': Review
+              }
     dot_cmds = ['all', 'count', 'show', 'destroy', 'update']
     types = {
-        'number_rooms': int, 'number_bathrooms': int,
-        'max_guest': int, 'price_by_night': int,
-        'latitude': float, 'longitude': float
-    }
+             'number_rooms': int, 'number_bathrooms': int,
+             'max_guest': int, 'price_by_night': int,
+             'latitude': float, 'longitude': float
+            }
+
+    def num_or_float(self, arg: str):
+        """
+        Method to convert str to int or float
+        Returns float or int in success or the
+        same type of data in failure
+        """
+        try:
+            return int(arg)
+        except Exception:
+            pass
+
+        try:
+            return float(arg)
+        except Exception:
+            return arg
 
     def preloop(self):
         """Prints if isatty is false"""
@@ -117,41 +132,41 @@ class HBNBCommand(cmd.Cmd):
         """ Overrides the emptyline method of CMD """
         pass
 
-    def converter(self, arg: str):
-        """convertir """
-        try:
-            return int(arg)
-        except Exception:
-            pass
+    def _key_value_parser(self, args):
+        """creates a dictionary from a list of strings"""
+        new_dict = {}
+        for arg in args:
+            if "=" in arg:
+                kvp = arg.split('=', 1)
+                key = kvp[0]
+                value = kvp[1]
+                if value[0] == value[-1] == '"':
+                    value = shlex.split(value)[0].replace('_', ' ')
+                else:
+                    try:
+                        value = int(value)
+                    except Exception:
+                        try:
+                            value = float(value)
+                        except Exception:
+                            continue
+                new_dict[key] = value
+        return new_dict
 
-        try:
-            return float(arg)
-        except Exception:
-            return (arg)
-
-    def do_create(self, args):
-        """ Create an object of any class"""
-        tokens = args.split()
-
-        if len(tokens) == 0:
+    def do_create(self, arg):
+        """Creates a new instance of a class"""
+        args = arg.split()
+        if len(args) == 0:
             print("** class name missing **")
-
+            return False
+        if args[0] in classes:
+            new_dict = self._key_value_parser(args[1:])
+            instance = classes[args[0]](**new_dict)
         else:
-            if tokens[0] in HBNBCommand.classes:
-                insmbase = HBNBCommand.classes[tokens[0]]()
-                for index in range(1, len(tokens)):
-                    param = tokens[index].split('=')
-                    key = param[0]
-                    value = (param[1])
-                    if value[0] is value[-1] in ["'",'"']:
-                        value = value.strip("\"'").replace("_"," ")
-                    else:
-                        value = self.converter(value)
-                    setattr(insmbase, key, value)
-                print(insmbase.id)
-                insmbase.save()
-            else:
-                print("** class doesn't exist **")
+            print("** class doesn't exist **")
+            return False
+        print(instance.id)
+        instance.save()
 
     def help_create(self):
         """ Help information for the create method """
@@ -214,7 +229,7 @@ class HBNBCommand(cmd.Cmd):
         key = c_name + "." + c_id
 
         try:
-            del (storage.all()[key])
+            del(storage.all()[key])
             storage.save()
         except KeyError:
             print("** no instance found **")
@@ -224,24 +239,22 @@ class HBNBCommand(cmd.Cmd):
         print("Destroys an individual instance of a class")
         print("[Usage]: destroy <className> <objectId>\n")
 
-    def do_all(self, args):
-        """ Shows all objects, or all objects of a class"""
-        obj = storage.all()
-        print_list = []
-
-        if args:
-            args = args.split(' ')[0]  # remove possible trailing args
-            if args not in HBNBCommand.classes:
-                print("** class doesn't exist **")
-                return
-            for k, v in obj.items():
-                if k.split('.')[0] == args:
-                    print_list.append(str(v))
+    def do_all(self, arg):
+        """Prints string representations of instances"""
+        args = shlex.split(arg)
+        obj_list = []
+        if len(args) == 0:
+            obj_dict = storage.all()
+        elif args[0] in classes:
+            obj_dict = storage.all(classes[args[0]])
         else:
-            for k, v in storage.obj.items():
-                print_list.append(str(v))
-
-        print(print_list)
+            print("** class doesn't exist **")
+            return False
+        for key in obj_dict:
+            obj_list.append(str(obj_dict[key]))
+        print("[", end="")
+        print(", ".join(obj_list), end="")
+        print("]")
 
     def help_all(self):
         """ Help information for the all command """
