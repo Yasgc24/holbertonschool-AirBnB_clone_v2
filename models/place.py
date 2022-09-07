@@ -4,21 +4,6 @@ from sqlalchemy.sql.schema import Table
 from models.base_model import Base, BaseModel
 from sqlalchemy import Column, String, ForeignKey, Integer, Float
 from sqlalchemy.orm import relationship
-import models
-from models.review import Review
-
-place_amenity = Table('place_amenity',
-                      Base.metadata,
-                      Column("place_id",
-                             String(60),
-                             ForeignKey("places.id"),
-                             primary_key=True,
-                             nullable=False),
-                      Column("amenity_id",
-                             String(60),
-                             ForeignKey("amenities.id"),
-                             primary_key=True,
-                             nullable=False))
 
 
 class Place(BaseModel, Base):
@@ -36,23 +21,3 @@ class Place(BaseModel, Base):
     longitude = Column(Float)
     amenity_ids = []
     reviews = relationship("Review", backref="state", cascade="delete")
-
-    @property
-    def reviews(self):
-        """Returns the list of Review instances with
-        place_id equals to the current Place.id"""
-        instances = models.storage.all(Review)
-        new = []
-        for review in instances.values():
-            if review.place_id == self.id:
-                new.append(review)
-        return new
-
-    @reviews.setter
-    def amenities(self, obj):
-        """Returns the list of Amenity instances based on the attribute
-        amenity_ids that contains all Amenity.id
-        linked to the Place"""
-        from models.amenity import Amenity
-        if isinstance(obj, Amenity):
-            self.amenity_ids.append(obj.id)
