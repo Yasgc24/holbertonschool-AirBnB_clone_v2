@@ -1,7 +1,5 @@
 #!/usr/bin/python3
 """This module defines a class User"""
-from turtle import back
-from models import review
 from models.base_model import Base, BaseModel
 from sqlalchemy import Column, String
 from sqlalchemy.orm import relationship

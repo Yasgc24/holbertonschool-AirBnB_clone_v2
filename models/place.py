@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 """ Place Module for HBNB project """
-from msilib import Table
+from sqlalchemy.sql.schema import Table
 from models.base_model import Base, BaseModel
 from sqlalchemy import Column, String, ForeignKey, Integer, Float
 from sqlalchemy.orm import relationship
@@ -48,3 +48,11 @@ class Place(BaseModel, Base):
                 new.append(review)
         return new
 
+    @reviews.setter
+    def amenities(self, obj):
+        """Returns the list of Amenity instances based on the attribute
+        amenity_ids that contains all Amenity.id
+        linked to the Place"""
+        from models.amenity import Amenity
+        if isinstance(obj, Amenity):
+            self.amenity_ids.append(obj.id)
