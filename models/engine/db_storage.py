@@ -2,14 +2,13 @@
 """New engine DBStorage"""
 from sqlalchemy import (create_engine)
 from os import getenv
-from models.base_model import BaseModel, Base
+from models.base_model import Base
 from models.amenity import Amenity
 from models.city import City
 from models.place import Place
 from models.review import Review
 from models.state import State
 from models.user import User
-from sqlalchemy.orm import relationship
 from sqlalchemy.orm import scoped_session
 from sqlalchemy.orm import sessionmaker
 
@@ -34,19 +33,22 @@ class DBStorage:
     def all(self, cls=None):
         """query on the current database session (self.__session) all
         objects depending of the class name"""
-        if cls is None:
-            objects = self.__session.query(State).all()
-            objects.extend(self.__session.query(City).all())
-            objects.extend(self.__session.query(User).all())
-            objects.extend(self.__session.query(Place).all())
-            objects.extend(self.__session.query(Review).all())
-            objects.extend(self.__session.query(Amenity).all())
-        else:
-            if isinstance(cls, str):
-                cls = eval(cls)
-            objects = self.__session.query(cls)
-        return {"{}.{}".format(type(obj).__name__,
-                               obj.id): obj for obj in objects}
+        classes = [User, State, Place, City, Amenity, Review]
+        result = {}
+        if cls in classes:
+            search = self.__session.query(cls)
+            for object in search:
+                key = "{}.{}".format(type(object).__name__,
+                               object.id)
+                result[key] = object
+        elif cls is None:
+            for class_ in classes:
+                search = self.__session.query(class_)
+                for object in search:
+                    key = "{}.{}".format(type(object).__name__,
+                               object.id)
+                    result[key] = object
+        return result
 
     def new(self, obj):
         """Add the object to the current database session"""
