@@ -3,6 +3,7 @@
 from sqlalchemy import (create_engine)
 from os import getenv
 from models.base_model import Base
+from models.amenity import Amenity
 from models.city import City
 from models.place import Place
 from models.review import Review
@@ -10,8 +11,6 @@ from models.state import State
 from models.user import User
 from sqlalchemy.orm import scoped_session
 from sqlalchemy.orm import sessionmaker
-import models
-from models.amenity import Amenity
 
 class DBStorage:
     """Database storage"""
@@ -61,7 +60,7 @@ class DBStorage:
     def delete(self, obj=None):
         """Delete from the current database session obj if not None"""
         if obj is not None:
-            self.__session.delete()
+            self.__session.delete(obj)
 
     def reload(self):
         """Create all tables in the database"""
