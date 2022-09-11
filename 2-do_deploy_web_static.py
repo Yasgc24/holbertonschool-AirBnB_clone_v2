@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/python3
 """2. Deploy archive!"""
 from fabric.api import local, env, run, cd, put
 from datetime import datetime
