@@ -3,6 +3,7 @@
 
 # Install Nginx if it not already installed
 sudo apt -y update
+sudo apt -y upgrade
 sudo apt -y install nginx
 
 # Create the folders
