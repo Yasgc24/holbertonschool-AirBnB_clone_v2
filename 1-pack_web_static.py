@@ -4,6 +4,7 @@ from datetime import datetime
 from os.path import isdir
 from fabric.api import local
 
+
 def do_pack():
     """Generates a .tgz archive from the contents"""
     date = datetime.now().strftime("%Y%m%d%H%M%S")
