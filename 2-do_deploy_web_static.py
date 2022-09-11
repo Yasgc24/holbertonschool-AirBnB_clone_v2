@@ -3,7 +3,7 @@
 from fabric.api import local, env, run, cd, put
 from datetime import datetime
 from os.path import isdir, exists
-
+env.use_ssh_config = True
 env.hosts = ["54.227.113.133", "184.73.20.152"]
 env.user = "ubuntu"
 
@@ -23,7 +23,8 @@ def do_pack():
 
 def do_deploy(archive_path):
     """Distributes an archive to your web servers"""
-    if not exists(archive_path):
+    if not archive_path:
+        run("echo $HOSTNAME")
         return False
     try:
         file_name = archive_path.split("/")[1]
@@ -38,6 +39,8 @@ def do_deploy(archive_path):
             run("mv * ../")
         run("rm -rf /data/web_static/current")
         run("ln -sf {} /data/web_static/current".format(path))
+        print("New version deployed!")
         return True
     except Exception as err:
+        print(err)
         return False
