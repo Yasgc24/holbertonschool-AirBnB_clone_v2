@@ -1,8 +1,8 @@
 #!/usr/bin/python3
-"""2. Deploy archive!"""
+"""3. Full deployment"""
 from fabric.api import local, env, run, cd, put
 from datetime import datetime
-from os.path import isdir, exists
+from os.path import isdir
 env.use_ssh_config = True
 env.hosts = ["54.227.113.133", "184.73.20.152"]
 env.user = "ubuntu"
@@ -48,6 +48,8 @@ def do_deploy(archive_path):
 
 def deploy():
     """creates and distributes an archive to your web servers"""
-    if do_pack is None:
+    archive_path = do_pack
+    if archive_path:
+        do_deploy(archive_path)
+    else:
         return False
-    return do_deploy

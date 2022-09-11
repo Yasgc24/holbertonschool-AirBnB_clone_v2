@@ -2,7 +2,7 @@
 """2. Deploy archive!"""
 from fabric.api import local, env, run, cd, put
 from datetime import datetime
-from os.path import isdir, exists
+from os.path import isdir
 env.use_ssh_config = True
 env.hosts = ["54.227.113.133", "184.73.20.152"]
 env.user = "ubuntu"
