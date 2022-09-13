@@ -28,7 +28,8 @@ def text(text):
 @app.route("/python", strict_slashes=False, defaults={'text': 'is cool'})
 @app.route("/python/<text>", strict_slashes=False)
 def python_text(text):
-    """Display “Python ”, followed by the value of the text variable (replace underscore _ symbols with a space)"""
+    """Display “Python ”, followed by the value of the
+    text variable (replace underscore _ symbols with a space)"""
     text = text.replace("_", " ")
     return "Python {}".format(text)
 
