@@ -1,17 +1,20 @@
 #!/usr/bin/python3
 """4. Keep it clean!"""
 from fabric.api import *
-env.hosts = ["54.227.113.133", "184.73.20.152"]
+import os
+from datetime import datetime
+import tarfile
+env.hosts = ['154.227.113.133', '184.73.20.152']
 
 
 def do_clean(number=0):
-    """Deletes out-of-date archives"""
+    """ Removes all but given number of archives"""
     number = int(number)
     if number < 2:
         number = 1
     number += 1
     number = str(number)
-    with lcd("./versions"):
+    with lcd("versions"):
         local("ls -1t | grep web_static_.*\.tgz | tail -n +" +
               number + " | xargs -I {} rm -- {}")
     with cd("/data/web_static/releases"):
