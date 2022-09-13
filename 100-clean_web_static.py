@@ -1,9 +1,7 @@
 #!/usr/bin/python3
 """4. Keep it clean!"""
 from fabric.api import *
-import os
 from datetime import datetime
-import tarfile
 env.hosts = ['154.227.113.133', '184.73.20.152']
 
 
