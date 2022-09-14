@@ -12,6 +12,7 @@ def states():
     states = storage.all("State")
     return render_template("9-states.html", states=states)
 
+
 @app.route("/states/id", strict_slashes=False)
 def states_id(id):
     """Display a HTML page"""
