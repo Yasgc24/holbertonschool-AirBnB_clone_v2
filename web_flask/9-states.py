@@ -7,23 +7,18 @@ from models.state import State
 app = Flask(__name__)
 
 
-@app.route("/states", strict_slashes=False)
-@app.route("/states7<states_id>", strict_slashes=False)
-def states(state_id=None):
+@app.route('/states', strict_slashes=False)
+def state():
     """Display a HTML page"""
-    states = storage.all(State)
-    if state_id is not None:
-        state_id = State + "." + state_id
-    return render_template("9-states.html", states=states, state_id=state_id)
+    return render_template('7-states_list.html',
+                           states=storage.all(State))
 
-
-@app.route("/states/id", strict_slashes=False)
-def states_id(id):
-    """Display a HTML page"""
-    for state in storage.all(State).values():
-        if state.id == id:
-            return render_template("9-states.html", states=states)
-    return render_template("9-states.html", states=states)
+@app.route('/states/<string:id>', strict_slashes=False)
+def state_id(id=None):
+    """Display a HTML page inside the tag BODY"""
+    return render_template('9-states.html',
+                           states=storage.all(State)
+                           .get('State.{}'.format(id)))
 
 
 @app.teardown_appcontext
